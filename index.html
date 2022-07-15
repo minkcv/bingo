@@ -48,23 +48,65 @@
     </select>
     <br/>
     <textarea id="data" style="width: 200px; height: 200px;"></textarea>
+    <p>
+        Instructions: Put a list of 24 or 25 items in the text box above depending on if you want to use the free space. Then click the load items button.<br/>
+        If you shuffle you can share your layout text with someone else, just have them uncheck shuffle and paste the layout text in the layout box.<br>
+    </p>
     <script>
         function usePremade() {
             var v = document.getElementById('premades').value;
             var text = document.getElementById('data');
             if (v == 'eft') {
-                text.innerHTML = `Headshot out of nowhere, Encounter team of more than 2, Chad PvP, Timmy NOOO!, Pick up one thing and extract
-100m headshot, Leg Meta, Chicken Nugget (Limbs zeroed), "Pls no" in VOIP, Kill a hatchling
-Make over 300k rubles and get 0 kills in a raid, Scav has insane keys/gear, Die to cheater, Gamma is full of non meds value items
-Full auto and die empty, TTV in name, Drop a mag, 0 energy 0 hydration, Backpack falls through floor
-Co-op with someone from other faction, Die within first 5 min of raid, Fight at extract, GPU in PC, Betrayed by Ally`;
+                text.innerHTML = `Headshot out of nowhere
+Encounter team of more than 2
+Chad PvP
+Timmy NOOO!
+Pick up one thing and extract
+100m headshot
+Leg Meta
+Chicken Nugget (Limbs zeroed)
+"Pls no" in VOIP
+Kill a hatchling
+Make over 300k rubles and get 0 kills in a raid
+Scav has insane keys/gear
+Die to cheater
+Gamma is full of non meds value items
+Full auto and die empty
+TTV in name
+Drop a mag
+0 energy, 0 hydration
+Backpack falls through floor
+Co-op with someone from other faction
+Die within first 5 min of raid
+Fight at extract
+GPU in PC
+Betrayed by Ally`;
             }
             if (v == 'ow') {
-                text.innerHTML = `"Experiencing some lag", "Hold W", Teammate leaves, Res'd while eating, "Report X"
-Someone gets blamed, "What are we even doing?", Rein charges into entire enemy team, Awful microphone noises, Get stunlocked
-"use the shield", Bad calls, Voice comms only at end of round, Side B off stage
-"diff", Ultimate whiffs, "I need healing" in voice chat, Steamrolled, Someone loses it and goes full asshole
-Teammate counters you, "X is smurfing", Xenophobia, Bastion tactics fail spectacularly, Bitching about medals/fire`;
+                text.innerHTML = `"Experiencing some lag"
+"Hold W"
+Teammate leaves
+Res'd while eating
+"Report X"
+Someone gets blamed
+"What are we even doing?"
+Rein charges into entire enemy team
+Awful microphone noises
+Get stunlocked
+"use the shield"
+Bad calls
+Voice comms only at end of round
+Side B off stage
+"diff"
+Ultimate whiffs
+"I need healing" in voice chat
+Steamrolled
+Someone loses it and goes full asshole
+Teammate counters you
+"X is smurfing"
+Xenophobia
+Bastion tactics fail spectacularly
+Bitching about medals/fire`;
             }
             if (v == 'custom') {
                 text.innerHTML = "";
@@ -168,10 +210,7 @@ Teammate counters you, "X is smurfing", Xenophobia, Bastion tactics fail spectac
             var text = document.getElementById('data').value;
             var lines = text.split('\n');
             lines.forEach((line) => {
-                var lineItems = line.split(',');
-                lineItems.forEach((li) => {
-                    items.push(li);
-                });
+                items.push(line);
             });
             var d = document.getElementById('bingo-div');
             if (d.children.length > 0)
