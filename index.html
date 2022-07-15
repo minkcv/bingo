@@ -181,6 +181,11 @@ Bitching about medals/fire`;
             var fs = document.getElementById('free-space').checked;
             document.getElementById('bingo-get').style.visibility = 'hidden';
             var items = [];
+            var text = document.getElementById('data').value;
+            var lines = text.split('\n');
+            lines.forEach((line) => {
+                items.push(line);
+            });
             var positions = [];
             var shuffle = document.getElementById('shuffle').checked;
             var layout = document.getElementById('layout').value;
@@ -192,11 +197,11 @@ Bitching about medals/fire`;
                 var max = 25;
                 if (fs)
                     max = 24;
-                for (var i = 0; i < max; i++) {
+                for (var i = 0; i < lines.length; i++) {
                     ordered.push(i);
                 }
                 if (shuffle) {
-                    while (ordered.length > 0) {
+                    for (var i = 0; i < max; i++){
                         var index = Math.floor(Math.random() * ordered.length);
                         positions.push(ordered[index]);
                         ordered.splice(index, 1);
@@ -207,11 +212,6 @@ Bitching about medals/fire`;
                     positions = ordered;
                 }
             }
-            var text = document.getElementById('data').value;
-            var lines = text.split('\n');
-            lines.forEach((line) => {
-                items.push(line);
-            });
             var d = document.getElementById('bingo-div');
             if (d.children.length > 0)
                 d.removeChild(d.children[0]);
