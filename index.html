@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        html, body {
+            background-color: #2c2c2c;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        table, tbody, tr {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            border: 1px #777777 solid;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+        #bingo-get {
+            visibility: hidden;
+            color: #ff0000;
+            font-size: 24pt;
+        }
+    </style>
+    <title>Bingo</title>
+</head>
+<body>
+    <div id="bingo-div">
+        
+    </div>
+    <p id="bingo-get">BINGO</p>
+    <button onclick="loadItems()">Load Items</button>
+    <input id='shuffle' type="checkbox"/>
+    <label for='shuffle'>Shuffle items</label>
+    <input id="free-space" type="checkbox"/>
+    <label for="free-space">Free Space</label>
+    <br/>
+    <textarea id="data" style="width: 200px; height: 200px;"></textarea>
+    <script>
+        function itemClick(e) {
+            if (e.bingoEnabled)
+                e.style.backgroundColor = '#2c2c2c';
+            else {
+                e.style.backgroundColor = '#770000';
+            }
+            e.bingoEnabled = !e.bingoEnabled;
+            checkBingo();
+        }
+        function checkBingo() {
+            var t = document.getElementById('bingo-table');
+            var bingo = 0;
+            // Rows
+            for (var i = 0; i < 5; i++) {
+                var enabled = 0;
+                for (var j = 0; j < 5; j++) {
+                    var item = t.rows[i].cells[j];
+                    if (item.bingoEnabled)
+                        enabled++;
+                }
+                if (enabled == 5)
+                    bingo = true;
+            }
+            // Cols
+            for (var i = 0; i < 5; i++) {
+                var enabled = 0;
+                for (var j = 0; j < 5; j++) {
+                    var item = t.rows[j].cells[i];
+                    if (item.bingoEnabled)
+                        enabled++;
+                }
+                if (enabled == 5)
+                    bingo++;
+            }
+            // Diag
+            var enabled = 0;
+            for (var i = 0; i < 5; i++) {
+                var item = t.rows[i].cells[i];
+                if (item.bingoEnabled)
+                    enabled++;
+            }
+            if (enabled == 5)
+                bingo++;
+            enabled = 0;
+            for (var i = 0; i < 5; i++) {
+                var item = t.rows[4 - i].cells[i];
+                if (item.bingoEnabled)
+                    enabled++;
+            }
+            if (enabled == 5)
+                bingo++;
+                
+            if (bingo > 0){
+                document.getElementById('bingo-get').style.visibility = 'visible';
+                document.getElementById('bingo-get').innerHTML = 'BINGO';
+                if (bingo > 1)
+                document.getElementById('bingo-get').innerHTML = 'BINGO x' + bingo;
+            }
+            else
+                document.getElementById('bingo-get').style.visibility = 'hidden';
+        }
+        function loadItems() {
+            var fs = document.getElementById('free-space').checked;
+            document.getElementById('bingo-get').style.visibility = 'hidden';
+            var items = [];
+            var positions = [];
+            var rand = document.getElementById('shuffle').checked;
+            for (var i = 0; i < 25; i++) {
+                positions.push(i);
+            }
+            var text = document.getElementById('data').value;
+            var lines = text.split('\n');
+            lines.forEach((line) => {
+                var lineItems = line.split(',');
+                lineItems.forEach((li) => {
+                    items.push(li);
+                });
+            });
+            var d = document.getElementById('bingo-div');
+            if (d.children.length > 0)
+                d.removeChild(d.children[0]);
+            var t = document.createElement('table');
+            t.setAttribute('id', 'bingo-table');
+            var tb = document.createElement('tbody');
+            for (var i = 0; i < 5; i++) {
+                var tr = document.createElement('tr');
+                tb.appendChild(tr);
+                for (var j = 0; j < 5; j++) {
+                    var td = document.createElement('td');
+                    var itemText;
+                    if (fs && i == 2 && j == 2) {
+                        td.bingoEnabled = true;
+                        itemText = document.createTextNode('Free Space');
+                    }
+                    else {
+                        td.setAttribute('onclick', 'itemClick(this)');
+                        td.bingoEnabled = false;
+                        if (rand) {
+                            var index = Math.floor(Math.random() * positions.length);
+                            itemText = document.createTextNode(items[positions[index]]);
+                            positions.splice(index, 1);
+                        }
+                        else
+                            itemText = document.createTextNode(items[i * 5 + j]);
+                    }
+                    td.appendChild(itemText);
+                    tr.appendChild(td);
+                }
+            }
+            t.appendChild(tb);
+            d.appendChild(t);
+        }
+    </script>
+</body>
+</html>
