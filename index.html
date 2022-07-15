@@ -41,8 +41,39 @@
     <label for="layout">Layout</label>
     <input id='layout' type="text">
     <br/>
+    <select id="premades" onchange="usePremade()">
+        <option value="custom">Blank</option>
+        <option value="eft">Escape from Tarkov</option>
+        <option value="ow">Overwatch</option>
+    </select>
+    <br/>
     <textarea id="data" style="width: 200px; height: 200px;"></textarea>
     <script>
+        function usePremade() {
+            var v = document.getElementById('premades').value;
+            var text = document.getElementById('data');
+            if (v == 'eft') {
+                text.innerHTML = `Headshot out of nowhere, Encounter team of more than 2, Chad PvP, Timmy NOOO!, Pick up one thing and extract
+100m headshot, Leg Meta, Chicken Nugget (Limbs zeroed), "Pls no" in VOIP, Kill a hatchling
+Make over 300k rubles and get 0 kills in a raid, Scav has insane keys/gear, Die to cheater, Gamma is full of non meds value items
+Full auto and die empty, TTV in name, Drop a mag, 0 energy 0 hydration, Backpack falls through floor
+Co-op with someone from other faction, Die within first 5 min of raid, Fight at extract, GPU in PC, Betrayed by Ally`;
+            }
+            if (v == 'ow') {
+                text.innerHTML = `"Experiencing some lag", "Hold W", Teammate leaves, Res'd while eating, "Report X"
+Someone gets blamed, "What are we even doing?", Rein charges into entire enemy team, Awful microphone noises, Get stunlocked
+"use the shield", Bad calls, Voice comms only at end of round, Side B off stage
+"diff", Ultimate whiffs, "I need healing" in voice chat, Steamrolled, Someone loses it and goes full asshole
+Teammate counters you, "X is smurfing", Xenophobia, Bastion tactics fail spectacularly, Bitching about medals/fire`;
+            }
+            if (v == 'custom') {
+                text.innerHTML = "";
+            }
+            if (v != 'custom') {
+                document.getElementById('free-space').checked = true;
+            }
+
+        }
         function itemClick(e) {
             if (e.bingoEnabled)
                 e.style.backgroundColor = '#2c2c2c';
@@ -64,7 +95,7 @@
                         enabled++;
                 }
                 if (enabled == 5)
-                    bingo = true;
+                    bingo++;
             }
             // Cols
             for (var i = 0; i < 5; i++) {
