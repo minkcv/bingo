@@ -11,6 +11,7 @@
         table, tbody, tr {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         td {
             border: 1px #777777 solid;
@@ -36,6 +37,9 @@
     <label for='shuffle'>Shuffle items</label>
     <input id="free-space" type="checkbox"/>
     <label for="free-space">Free Space</label>
+    <br/>
+    <label for="layout">Layout</label>
+    <input id='layout' type="text">
     <br/>
     <textarea id="data" style="width: 200px; height: 200px;"></textarea>
     <script>
@@ -105,9 +109,30 @@
             document.getElementById('bingo-get').style.visibility = 'hidden';
             var items = [];
             var positions = [];
-            var rand = document.getElementById('shuffle').checked;
-            for (var i = 0; i < 25; i++) {
-                positions.push(i);
+            var shuffle = document.getElementById('shuffle').checked;
+            var layout = document.getElementById('layout').value;
+            if (layout && !shuffle) {
+                positions = layout.split(',');
+            }
+            else {
+                var ordered = [];
+                var max = 25;
+                if (fs)
+                    max = 24;
+                for (var i = 0; i < max; i++) {
+                    ordered.push(i);
+                }
+                if (shuffle) {
+                    while (ordered.length > 0) {
+                        var index = Math.floor(Math.random() * ordered.length);
+                        positions.push(ordered[index]);
+                        ordered.splice(index, 1);
+                    }
+                    document.getElementById('layout').value = positions;
+                }
+                else {
+                    positions = ordered;
+                }
             }
             var text = document.getElementById('data').value;
             var lines = text.split('\n');
@@ -136,13 +161,10 @@
                     else {
                         td.setAttribute('onclick', 'itemClick(this)');
                         td.bingoEnabled = false;
-                        if (rand) {
-                            var index = Math.floor(Math.random() * positions.length);
-                            itemText = document.createTextNode(items[positions[index]]);
-                            positions.splice(index, 1);
-                        }
-                        else
-                            itemText = document.createTextNode(items[i * 5 + j]);
+                        var index = i * 5 + j;
+                        if (fs && index > 11)
+                            index--;
+                        itemText = document.createTextNode(items[positions[index]]);
                     }
                     td.appendChild(itemText);
                     tr.appendChild(td);
