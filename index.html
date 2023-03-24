@@ -3,7 +3,9 @@
 <head>
     <meta charset='utf-8'>
     <style>
-        html, body {
+        body {
+            overflow: hidden;
+            margin: 0px;
             background-color: #2c2c2c;
             color: #ffffff;
             font-family: Arial, Helvetica, sans-serif;
@@ -51,6 +53,9 @@
     </select>
     <br/>
     <textarea id="data" style="width: 400px; height: 200px;"></textarea>
+    <br />
+    <label for="transparent-background">Transparent Background (For OBS Browser)</label>
+    <input id="transparent-background" type="checkbox" onchange="changeBackground()">
     <p>
         Instructions: Put a list of at least 24 or 25 items (one per line) in the text box above depending on if you want to use the free space. Then click the load items button.<br/>
         If you shuffle you can share your layout text with someone else, just have them uncheck shuffle and paste the layout text in the layout box.<br>
@@ -171,9 +176,29 @@ Somebody's tragic backstory`;
             }
 
         }
+        function changeBackground() {
+            var transparentBack = document.getElementById('transparent-background').checked;
+            if (transparentBack) {
+                document.body.style.backgroundColor = 'rgba(0,0,0,0)';
+            } else {
+                document.body.style.backgroundColor = '#2c2c2c';
+            }
+            var tds = document.getElementsByTagName('td');
+            for (var i = 0; i < tds.length; i++){
+                var td = tds[i]
+                if (transparentBack)
+                    td.style.backgroundColor = 'rgba(0,0,0,0)';
+                else
+                td.style.backgroundColor = '#2c2c2c';
+            }
+        }
         function itemClick(e) {
+            var transparentBack = document.getElementById('transparent-background').checked;
             if (e.bingoEnabled)
-                e.style.backgroundColor = '#2c2c2c';
+                if (transparentBack)
+                    e.style.backgroundColor = 'rgba(0,0,0,0)';
+                else
+                    e.style.backgroundColor = '#2c2c2c';
             else {
                 e.style.backgroundColor = '#770000';
             }
