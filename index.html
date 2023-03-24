@@ -186,10 +186,20 @@ Somebody's tragic backstory`;
             var tds = document.getElementsByTagName('td');
             for (var i = 0; i < tds.length; i++){
                 var td = tds[i]
-                if (transparentBack)
-                    td.style.backgroundColor = 'rgba(0,0,0,0)';
-                else
-                td.style.backgroundColor = '#2c2c2c';
+                if (!td.freeSpace) {
+                    if (td.bingoEnabled) {
+                        if (transparentBack)
+                            td.style.backgroundColor = 'rgba(46,0,0,0.5)';
+                        else
+                            td.style.backgroundColor = '#770000';
+                    }
+                    else {
+                        if (transparentBack)
+                            td.style.backgroundColor = 'rgba(0,0,0,0)';
+                        else
+                            td.style.backgroundColor = '#2c2c2c';
+                    }
+                }
             }
         }
         function itemClick(e) {
@@ -200,7 +210,10 @@ Somebody's tragic backstory`;
                 else
                     e.style.backgroundColor = '#2c2c2c';
             else {
-                e.style.backgroundColor = '#770000';
+                if (transparentBack)
+                    e.style.backgroundColor = 'rgba(46, 0, 0, 0.5)';
+                else
+                    e.style.backgroundColor = '#770000';
             }
             e.bingoEnabled = !e.bingoEnabled;
             checkBingo();
@@ -306,6 +319,7 @@ Somebody's tragic backstory`;
                     var itemText;
                     if (fs && i == 2 && j == 2) {
                         td.bingoEnabled = true;
+                        td.freeSpace = true;
                         itemText = document.createTextNode('Free Space');
                     }
                     else {
