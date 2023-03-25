@@ -41,15 +41,25 @@
         
     </div>
     <p id="bingo-get">BINGO</p>
-    <button onclick="loadItems()">Load Items</button>
-    <input id='shuffle' type="checkbox"/>
-    <label for='shuffle'>Shuffle items</label>
-    <input id="free-space" type="checkbox"/>
+    <button onclick="loadItems()">Create Card</button>
+    <br />
+    <input id="free-space" type="checkbox" checked="true"/>
     <label for="free-space">Free Space</label>
-    <br/>
-    <label for="layout">Layout</label>
+    <br />
+    <input id='no-shuffle' type="radio" name="layout-option" checked="true"/>
+    <label for="no-shuffle">No Shuffle</label>
+    <br />
+    <input id='use-shuffle' type="radio" name="layout-option"/>
+    <label for='use-shuffle'>Shuffle items</label>
+    <br />
+    <input id="use-layout" type="radio" name="layout-option"/>
+    <label for="use-layout">Layout</label>
     <input id='layout' type="text">
     <br/>
+    <input id="use-seed" type="radio" name="layout-option"/>
+    <label for="use-seed">Seed Layout</label>
+    <input id="shuffle-seed" type="text"/>
+    <br />
     <label for="premades">Pre-made lists:</label>
     <select id="premades" onchange="usePremade()">
         <option value="custom">Blank</option>
@@ -64,8 +74,8 @@
     <label for="transparent-background">Transparent Background (For OBS Browser)</label>
     <input id="transparent-background" type="checkbox" onchange="changeBackground()">
     <p>
-        Instructions: Put a list of at least 24 or 25 items (one per line) in the text box above depending on if you want to use the free space. Then click the load items button.<br/>
-        If you shuffle you can share your layout text with someone else, just have them uncheck shuffle and paste the layout text in the layout box.<br>
+        Instructions: Put a list of at least 24 or 25 items (one per line) in the text box above depending on if you want to use the free space. Then click the Create Card button.<br/>
+        If you shuffle you can share your layout text with someone else, just have them select Layout and paste the layout text in the layout box.<br>
     </p>
     <script>
         function usePremade() {
@@ -280,6 +290,8 @@ Somebody's tragic backstory`;
         function loadItems() {
             var fs = document.getElementById('free-space').checked;
             document.getElementById('bingo-get').style.visibility = 'hidden';
+            var useSeed = document.getElementById('use-seed').checked;
+            var seed = document.getElementById('shuffle-seed').value;
             var items = [];
             var text = document.getElementById('data').value;
             var lines = text.split('\n');
@@ -287,9 +299,10 @@ Somebody's tragic backstory`;
                 items.push(line);
             });
             var positions = [];
-            var shuffle = document.getElementById('shuffle').checked;
+            var shuffle = document.getElementById('use-shuffle').checked;
             var layout = document.getElementById('layout').value;
-            if (layout && !shuffle) {
+            var useLayout = document.getElementById('use-layout').checked;
+            if (useLayout) {
                 positions = layout.split(',');
             }
             else {
@@ -300,13 +313,26 @@ Somebody's tragic backstory`;
                 for (var i = 0; i < lines.length; i++) {
                     ordered.push(i);
                 }
-                if (shuffle) {
+                if (shuffle || useSeed) {
+                    var seed;
+                    var rand;
+                    if (useSeed) {
+                        seed = cyrb128(document.getElementById('shuffle-seed'));
+                        rand = sfc32(seed[0], seed[1], seed[2], seed[3]);
+                    }
                     for (var i = 0; i < max; i++){
-                        var index = Math.floor(Math.random() * ordered.length);
+                        var index;
+                        if (shuffle)
+                            index = Math.floor(Math.random() * ordered.length);
+                        else if (useSeed) {
+                            index = Math.floor(rand() * ordered.length)
+                        }
+
                         positions.push(ordered[index]);
                         ordered.splice(index, 1);
                     }
-                    document.getElementById('layout').value = positions;
+                    if (shuffle)
+                        document.getElementById('layout').value = positions;
                 }
                 else {
                     positions = ordered;
@@ -343,6 +369,35 @@ Somebody's tragic backstory`;
             }
             t.appendChild(tb);
             d.appendChild(t);
+        }
+        function cyrb128(str) {
+            let h1 = 1779033703, h2 = 3144134277,
+            h3 = 1013904242, h4 = 2773480762;
+            for (let i = 0, k; i < str.length; i++) {
+                k = str.charCodeAt(i);
+                h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+                h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+                h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+                h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+            }
+            h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+            h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+            h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+            h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+            return [(h1^h2^h3^h4)>>>0, (h2^h1)>>>0, (h3^h1)>>>0, (h4^h1)>>>0];
+        }
+        function sfc32(a, b, c, d) {
+            return function() {
+                a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
+                var t = (a + b) | 0;
+                a = b ^ b >>> 9;
+                b = c + (c << 3) | 0;
+                c = (c << 21 | c >>> 11);
+                d = d + 1 | 0;
+                t = t + d | 0;
+                c = c + t | 0;
+                return (t >>> 0) / 4294967296;
+            }
         }
     </script>
 </body>
