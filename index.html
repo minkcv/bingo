@@ -71,6 +71,9 @@
     <br/>
     <textarea id="data" style="width: 400px; height: 200px;"></textarea>
     <br />
+    <button onclick="createURL()">Share URL</button>
+    <input type="text" id="share-url">
+    <br />
     <label for="transparent-background">Transparent Background (For OBS Browser)</label>
     <input id="transparent-background" type="checkbox" onchange="changeBackground()">
     <p>
@@ -190,6 +193,27 @@ Somebody's tragic backstory`;
             }
             if (v != 'custom') {
                 document.getElementById('free-space').checked = true;
+            }
+        }
+        document.body.onload = function() {
+            var q = window.location.search;
+            var upms = new URLSearchParams(q);
+            if (upms.has('fs')) {
+                document.getElementById('free-space').value = upms.get('fs');
+            }
+            if (upms.has('sd')) {
+                document.getElementById('shuffle-seed').value = upms.get('sd');
+                document.getElementById('use-seed').checked = true;
+            }
+            if (upms.has('sf')) {
+                document.getElementById('use-shuffle').checked = true;
+            }
+            if (upms.has('sl')) {
+                document.getElementById('use-layout').checked = true;
+                document.getElementById('layout').value = upms.get('sl');
+            }
+            if (upms.has('il')) {
+                document.getElementById('data').value = upms.get('il');
             }
 
         }
@@ -369,6 +393,20 @@ Somebody's tragic backstory`;
             }
             t.appendChild(tb);
             d.appendChild(t);
+        }
+        function createURL() {
+            var params = new URLSearchParams();
+            if (document.getElementById('free-space').checked)
+                params.append("fs", true)
+            if (document.getElementById('use-shuffle').checked)
+                params.append("sf", true);
+            if (document.getElementById('use-layout').checked)
+                params.append("sl", document.getElementById('layout').value);
+            if (document.getElementById('use-seed').checked)
+                params.append("sd", document.getElementById('shuffle-seed').value);
+            if (document.getElementById('data').value.length > 0)
+                params.append("il", document.getElementById('data').value);
+            document.getElementById('share-url').value = "https://minkcv.github.io/bingo?" + params.toString();
         }
         function cyrb128(str) {
             let h1 = 1779033703, h2 = 3144134277,
