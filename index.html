@@ -62,7 +62,7 @@
     <br />
     <label for="premades">Pre-made lists:</label>
     <select id="premades" onchange="usePremade()">
-        <option value="custom">Blank</option>
+        <option value="custom">Custom</option>
         <option value="eft">Escape from Tarkov</option>
         <option value="ow">Overwatch</option>
         <option value="code">Code</option>
@@ -214,6 +214,10 @@ Somebody's tragic backstory`;
             }
             if (upms.has('il')) {
                 document.getElementById('data').value = upms.get('il');
+            }
+            if (upms.has('pl')) {
+                document.getElementById('premades').options.selectedIndex = upms.get('pl');
+                usePremade();
             }
 
         }
