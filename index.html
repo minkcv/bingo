@@ -33,6 +33,9 @@
             color: #ff0000;
             font-size: 24pt;
         }
+        #prompt-seed-controls {
+            display: none
+        }
     </style>
     <title>Bingo</title>
 </head>
@@ -41,6 +44,11 @@
         
     </div>
     <p id="bingo-get">BINGO</p>
+    <div id="prompt-seed-controls">
+        <label for="prompt-seed-in">Username: </label>
+        <input id="prompt-seed-in" type="text"/>
+        <button onclick="loadItems()">Create Card</button>
+    </div>
     <div id="controls">
         <button onclick="loadItems()">Create Card</button>
         <br />
@@ -69,16 +77,22 @@
             <option value="code">Code</option>
             <option value="vrc">VRChat</option>
         </select>
-        <br/>
-        <textarea id="data" style="width: 400px; height: 200px;"></textarea>
         <br />
+        <textarea id="data" style="width: 400px; height: 200px;"></textarea>
+        <br/>
         <button onclick="createURL()">Share URL</button>
         <input type="text" id="share-url">
-        <input id="auto-create" type="checkbox" checked="true"/>
+        <br />
+        <input id="auto-create" type="radio" checked="true" name="auto-setup"/>
         <label for="auto-create">Auto Create Card</label>
+        <br />
+        <span>&emsp;</span>
         <input id="hide-controls" type="checkbox" checked="false"/>
         <label for="hide-controls">Hide Controls</label>
         <br />
+        <input id="prompt-seed" type="radio" name="auto-setup"/>
+        <label for="prompt-seed">Prompt for seed</label>
+        <br /><br />
         <label for="transparent-background">Transparent Background (For OBS Browser)</label>
         <input id="transparent-background" type="checkbox" onchange="changeBackground()">
         <p>
@@ -204,8 +218,12 @@ actual nice interaction with a rando`;
         document.body.onload = function() {
             var q = window.location.search;
             var upms = new URLSearchParams(q);
-            if (upms.has('hc')) {
+            if (upms.has('hc') && !upms.has('ps')) {
                 document.getElementById('controls').style.display = "none"
+            }
+            if (upms.has('ps')) {
+                document.getElementById('controls').style.display = "none"
+                document.getElementById('prompt-seed-controls').style.display = "block"
             }
             if (upms.has('fs')) {
                 document.getElementById('free-space').value = upms.get('fs');
@@ -231,7 +249,6 @@ actual nice interaction with a rando`;
             if (upms.has('ac')) {
                 loadItems()
             }
-
         }
         function changeBackground() {
             var transparentBack = document.getElementById('transparent-background').checked;
@@ -342,6 +359,11 @@ actual nice interaction with a rando`;
             var shuffle = document.getElementById('use-shuffle').checked;
             var layout = document.getElementById('layout').value;
             var useLayout = document.getElementById('use-layout').checked;
+            var promptSeed = document.getElementById('prompt-seed-in').value;
+            if (promptSeed) {
+                seed = promptSeed
+                useSeed = true
+            }
             if (useLayout) {
                 positions = layout.split(',');
             }
@@ -394,6 +416,9 @@ actual nice interaction with a rando`;
                         td.bingoEnabled = true;
                         td.freeSpace = true;
                         itemText = document.createTextNode('Free Space');
+                        if (promptSeed) {
+                            itemText.textContent += "\n(" + promptSeed + ")"
+                        }
                     }
                     else {
                         td.setAttribute('onclick', 'itemClick(this)');
@@ -409,6 +434,9 @@ actual nice interaction with a rando`;
             }
             t.appendChild(tb);
             d.appendChild(t);
+            if (promptSeed) {
+                document.getElementById('prompt-seed-controls').style.display = "none"
+            }
         }
         function createURL() {
             var params = new URLSearchParams();
@@ -426,6 +454,8 @@ actual nice interaction with a rando`;
                 params.append("sd", document.getElementById('shuffle-seed').value);
             if (document.getElementById('data').value.length > 0)
                 params.append("il", document.getElementById('data').value);
+            if (document.getElementById('prompt-seed').checked) 
+                params.append("ps", true)
             document.getElementById('share-url').value = "https://minkcv.github.io/bingo?" + params.toString();
         }
         function cyrb128(str) {
