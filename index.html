@@ -376,10 +376,9 @@ actual nice interaction with a rando`;
                     ordered.push(i);
                 }
                 if (shuffle || useSeed) {
-                    var seed;
                     var rand;
                     if (useSeed) {
-                        seed = cyrb128(document.getElementById('shuffle-seed'));
+                        seed = cyrb128(seed);
                         rand = sfc32(seed[0], seed[1], seed[2], seed[3]);
                     }
                     for (var i = 0; i < max; i++){
