@@ -41,45 +41,51 @@
         
     </div>
     <p id="bingo-get">BINGO</p>
-    <button onclick="loadItems()">Create Card</button>
-    <br />
-    <input id="free-space" type="checkbox" checked="true"/>
-    <label for="free-space">Free Space</label>
-    <br />
-    <input id='no-shuffle' type="radio" name="layout-option" checked="true"/>
-    <label for="no-shuffle">No Shuffle</label>
-    <br />
-    <input id='use-shuffle' type="radio" name="layout-option"/>
-    <label for='use-shuffle'>Shuffle items</label>
-    <br />
-    <input id="use-layout" type="radio" name="layout-option"/>
-    <label for="use-layout">Layout</label>
-    <input id='layout' type="text">
-    <br/>
-    <input id="use-seed" type="radio" name="layout-option"/>
-    <label for="use-seed">Seed Layout</label>
-    <input id="shuffle-seed" type="text"/>
-    <br />
-    <label for="premades">Pre-made lists:</label>
-    <select id="premades" onchange="usePremade()">
-        <option value="custom">Custom</option>
-        <option value="eft">Escape from Tarkov</option>
-        <option value="ow">Overwatch</option>
-        <option value="code">Code</option>
-        <option value="vrc">VRChat</option>
-    </select>
-    <br/>
-    <textarea id="data" style="width: 400px; height: 200px;"></textarea>
-    <br />
-    <button onclick="createURL()">Share URL</button>
-    <input type="text" id="share-url">
-    <br />
-    <label for="transparent-background">Transparent Background (For OBS Browser)</label>
-    <input id="transparent-background" type="checkbox" onchange="changeBackground()">
-    <p>
-        Instructions: Put a list of at least 24 or 25 items (one per line) in the text box above depending on if you want to use the free space. Then click the Create Card button.<br/>
-        If you shuffle you can share your layout text with someone else, just have them select Layout and paste the layout text in the layout box.<br>
-    </p>
+    <div id="controls">
+        <button onclick="loadItems()">Create Card</button>
+        <br />
+        <input id="free-space" type="checkbox" checked="true"/>
+        <label for="free-space">Free Space</label>
+        <br />
+        <input id='no-shuffle' type="radio" name="layout-option" checked="true"/>
+        <label for="no-shuffle">No Shuffle</label>
+        <br />
+        <input id='use-shuffle' type="radio" name="layout-option"/>
+        <label for='use-shuffle'>Shuffle items</label>
+        <br />
+        <input id="use-layout" type="radio" name="layout-option"/>
+        <label for="use-layout">Layout</label>
+        <input id='layout' type="text">
+        <br/>
+        <input id="use-seed" type="radio" name="layout-option"/>
+        <label for="use-seed">Seed Layout</label>
+        <input id="shuffle-seed" type="text"/>
+        <br />
+        <label for="premades">Pre-made lists:</label>
+        <select id="premades" onchange="usePremade()">
+            <option value="custom">Custom</option>
+            <option value="eft">Escape from Tarkov</option>
+            <option value="ow">Overwatch</option>
+            <option value="code">Code</option>
+            <option value="vrc">VRChat</option>
+        </select>
+        <br/>
+        <textarea id="data" style="width: 400px; height: 200px;"></textarea>
+        <br />
+        <button onclick="createURL()">Share URL</button>
+        <input type="text" id="share-url">
+        <input id="auto-create" type="checkbox" checked="true"/>
+        <label for="auto-create">Auto Create Card</label>
+        <input id="hide-controls" type="checkbox" checked="false"/>
+        <label for="hide-controls">Hide Controls</label>
+        <br />
+        <label for="transparent-background">Transparent Background (For OBS Browser)</label>
+        <input id="transparent-background" type="checkbox" onchange="changeBackground()">
+        <p>
+            Instructions: Put a list of at least 24 or 25 items (one per line) in the text box above depending on if you want to use the free space. Then click the Create Card button.<br/>
+            If you shuffle you can share your layout text with someone else, just have them select Layout and paste the layout text in the layout box.<br>
+        </p>
+    </div>
     <script>
         function usePremade() {
             var v = document.getElementById('premades').value;
@@ -198,6 +204,9 @@ actual nice interaction with a rando`;
         document.body.onload = function() {
             var q = window.location.search;
             var upms = new URLSearchParams(q);
+            if (upms.has('hc')) {
+                document.getElementById('controls').style.display = "none"
+            }
             if (upms.has('fs')) {
                 document.getElementById('free-space').value = upms.get('fs');
             }
@@ -218,6 +227,9 @@ actual nice interaction with a rando`;
             if (upms.has('pl')) {
                 document.getElementById('premades').options.selectedIndex = upms.get('pl');
                 usePremade();
+            }
+            if (upms.has('ac')) {
+                loadItems()
             }
 
         }
@@ -400,6 +412,10 @@ actual nice interaction with a rando`;
         }
         function createURL() {
             var params = new URLSearchParams();
+            if (document.getElementById('hide-controls').checked)
+                params.append("hc", true)
+            if (document.getElementById('auto-create').checked)
+                params.append("ac", true)
             if (document.getElementById('free-space').checked)
                 params.append("fs", true)
             if (document.getElementById('use-shuffle').checked)
